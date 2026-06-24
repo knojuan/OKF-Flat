@@ -14,7 +14,7 @@ Initial draft specification.
 - Full normative specification (`spec/okf-flat-spec.md`)
 - Built-in bundle reference file (`spec/okf-flat-reference.md`)
 - Audit prompt template (`tools/audit-prompt.md`)
-- Bundle maintenance template (`tools/audit-maintenance.md`)
+- Bundle maintenance template (`tools/okf-flat-maintenance.md`)
 - Conformance validator specification (`tools/validate.md`)
 
 ### Divergences from OKF v0.1
