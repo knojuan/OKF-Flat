@@ -1,11 +1,11 @@
 ## Knowledge Bundle
 
-This project maintains an OKF-Flat knowledge bundle at `[BUNDLE_PATH]`.
+This project maintains an LKF knowledge bundle at `[BUNDLE_PATH]`.
 
 Before contributing to the bundle, read:
 
-- `[BUNDLE_PATH]/okf-flat-reference.md` - navigation and structure conventions
-- `[BUNDLE_PATH]/okf-flat-maintenance.md` - this bundle's maintenance conventions
+- `[BUNDLE_PATH]/.lkf-reference.md` - navigation and structure conventions
+- `[BUNDLE_PATH]/.lkf-maintenance.md` - this bundle's maintenance conventions
 
 ### Audit Awareness
 
@@ -30,7 +30,7 @@ When suggesting an audit, ask:
 
 > "This may have affected the knowledge bundle. Run an audit now, or save it for later?"
 
-If yes, follow the instructions in `tools/audit-prompt.md`. If no, proceed
+If yes, follow the instructions in `[BUNDLE_PATH]/.lkf-audit.md`. If no, proceed
 and do not raise the audit question again for the same evidence during this
 session.
 
@@ -38,7 +38,7 @@ session.
 
 Update the bundle as part of any task that creates or changes knowledge
 covered by the bundle. Do not defer clear updates to the audit. Consult
-`[BUNDLE_PATH]/okf-flat-maintenance.md` for what triggers an update and how
+`[BUNDLE_PATH]/.lkf-maintenance.md` for what triggers an update and how
 to apply one.
 
 ## Knowledge Domain Understanding
@@ -52,7 +52,7 @@ available.
 **Before exploring primary sources:**
 
 1. Navigate the bundle using the four-level protocol in
-   `[BUNDLE_PATH]/okf-flat-reference.md`. Start at `[BUNDLE_PATH]/index.md`,
+   `[BUNDLE_PATH]/.lkf-reference.md`. Start at `[BUNDLE_PATH]/index.md`,
    scan group index frontmatter, then read targeted concept files.
 2. Use the `resource` field and `## Sources` or `## Implementation` sections
    in concept files to locate specific source artifacts relevant to your task.

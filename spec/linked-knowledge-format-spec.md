@@ -1,6 +1,6 @@
-# OKF-Flat Specification
+# Linked Knowledge Format Specification
 
-**Version:** 0.1.2-draft
+**Version:** 0.1-draft
 **Status:** Draft
 **Published:** 2026-06-26
 **License:** Apache 2.0
@@ -12,14 +12,18 @@
 
 ### 1.1 Purpose
 
-OKF-Flat is a profile of the Open Knowledge Format (OKF) v0.1 optimized
-for two specific use cases: link-graph navigation and agentic progressive
-disclosure. It addresses a structural tension in OKF's otherwise open
-design — directory hierarchy implies a primary taxonomy, but the most
-meaningful organizational structure in a knowledge bundle is the link
-graph between concepts, not the filesystem tree.
+Linked Knowledge Format (LKF) is an OKF-inspired profile for flat,
+agent-navigable knowledge bundles. Domain concept files follow the Open
+Knowledge Format (OKF) v0.1 frontmatter and linking conventions. LKF adds
+layout constraints, group-index requirements, and optional
+profile-specific control files for agent operation.
 
-OKF-Flat resolves this by prohibiting subdirectories entirely. All
+LKF addresses a structural tension in OKF's otherwise open design:
+directory hierarchy implies a primary taxonomy, but the most meaningful
+organizational structure in a knowledge bundle is the link graph between
+concepts, not the filesystem tree.
+
+LKF resolves this by prohibiting subdirectories entirely. All
 organization is expressed through typed group index files and cross-links.
 A concept can belong to multiple groups without duplication. An agent can
 evaluate whether a group is relevant by reading frontmatter alone, without
@@ -27,7 +31,7 @@ loading full file content.
 
 ### 1.2 Intended Audience
 
-OKF-Flat is for teams and individuals who:
+LKF is for teams and individuals who:
 
 - Are building knowledge bundles that will be consumed by AI agents
 - Want explicit, traversable navigation rather than implicit filesystem
@@ -40,23 +44,23 @@ OKF-Flat is for teams and individuals who:
 
 ### 1.3 Versioning
 
-OKF-Flat versions follow `<major>.<minor>`:
+LKF versions follow `<major>.<minor>`:
 - A minor bump introduces backward-compatible additions.
 - A major bump may make breaking changes.
 
-Bundles MAY declare their OKF-Flat version in `index.md` frontmatter:
+Bundles MAY declare their LKF version in `index.md` frontmatter:
 
 ```yaml
-okf_flat_version: "0.1"
+lkf_version: "0.1"
 ```
 
 ---
 
 ## Part 2: Relationship to OKF
 
-### 2.1 Inheritance
+### 2.1 OKF Lineage
 
-OKF-Flat inherits the following from OKF v0.1 unchanged:
+LKF adopts the following OKF v0.1 conventions for domain concepts:
 
 - The frontmatter schema (`type`, `title`, `description`, `resource`,
   `tags`, `timestamp`) and its permissive consumption rules
@@ -69,28 +73,35 @@ OKF-Flat inherits the following from OKF v0.1 unchanged:
 
 ### 2.2 Compatibility
 
-**An OKF-Flat bundle is a valid OKF bundle.**
+**LKF domain concept files are OKF-compatible.**
 
-Any tool, agent, or system that can consume OKF can consume OKF-Flat
-without modification.
+The complete LKF directory may include profile-specific control files
+such as `AGENTS.md` and `.lkf-*.md`. Those files are part of LKF, but
+they are not domain concepts and are not required to behave like OKF
+concept files.
 
-An OKF bundle is OKF-Flat conformant only if it uses no subdirectories,
-and all group index files carry a non-empty `description` field.
+Generic OKF consumers can read LKF concept files using OKF rules.
+LKF-aware consumers additionally understand the flat-directory
+constraint, group-index requirements, no-orphan rule, and control-file
+exemptions.
+
+An OKF bundle is LKF conformant only if it satisfies the LKF
+conformance rules in §3.11.
 
 ### 2.3 Divergence Table
 
-OKF-Flat makes two targeted changes to OKF. Both are motivated by
-OKF-Flat's specific design commitment to link-graph navigation and
-agentic progressive disclosure.
+LKF makes the following targeted changes relative to OKF. They are
+motivated by LKF's design commitment to link-graph navigation,
+agentic progressive disclosure, and local agent operation.
 
-| # | OKF v0.1 behavior | OKF-Flat behavior | Rationale |
+| # | OKF v0.1 behavior | LKF behavior | Rationale |
 |---|---|---|---|
 | D1 | Directory structure left to producer | No subdirectories permitted | A filesystem hierarchy implies a primary taxonomy. Concepts that belong to multiple groups can only physically live in one directory, forcing an arbitrary placement. Prohibiting subdirectories makes the link graph the sole organizational structure and removes the implied taxonomy entirely. |
-| D2 | `description` optional on all files | `description` required on `index_*.md` files | The four-level progressive disclosure protocol (§3.9) requires agents to evaluate group relevance by reading frontmatter only, without loading full file bodies. A group index without a `description` forces a full body read, defeating the purpose of the frontmatter scan layer. The requirement is scoped narrowly to group index files only — concept file `description` remains optional, consistent with OKF. |
+| D2 | `description` optional on all files | `description` required on `index_*.md` files | The four-level progressive disclosure protocol (§3.10) requires agents to evaluate group relevance by reading frontmatter only, without loading full file bodies. A group index without a `description` forces a full body read, defeating the purpose of the frontmatter scan layer. The requirement is scoped narrowly to group index files only — concept file `description` remains optional, consistent with OKF. |
+| D3 | Only OKF reserved filenames are defined | `AGENTS.md` and `.lkf-*.md` are reserved as optional LKF control files | Agents need predictable local instructions, maintenance guidance, and audit procedures. Reserving these names keeps operational files separate from domain concepts and allows validators to exempt them from concept reachability rules. |
 
-No other changes are made. OKF-Flat does not add new required frontmatter
-fields to concept files, does not restrict type values, and does not add
-new reserved filenames beyond those inherited from OKF.
+LKF does not add new required frontmatter fields to domain concept
+files and does not restrict domain concept type values.
 
 ---
 
@@ -98,16 +109,19 @@ new reserved filenames beyond those inherited from OKF.
 
 ### 3.1 Bundle Structure
 
-An OKF-Flat bundle is a single flat directory of `.md` files. No
+An LKF bundle is a single flat directory of `.md` files. No
 subdirectories are used.
 
 ```
 bundle/
-├── index.md                    # Root index. Required. No frontmatter.
+├── index.md                    # Root index. Required. Optional bundle metadata only.
 ├── index_<grouping>.md         # Group index. One per logical grouping.
 ├── <concept>.md                # Concept file.
 ├── log.md                      # Optional. Chronological change history.
-├── okf-flat-reference.md       # Recommended. Built-in navigation guide.
+├── AGENTS.md                   # Optional. Agent operating guide.
+├── .lkf-reference.md           # Optional. Built-in navigation guide.
+├── .lkf-maintenance.md         # Optional. Maintenance conventions.
+├── .lkf-audit.md               # Optional. Audit procedure.
 └── ...
 ```
 
@@ -116,11 +130,19 @@ author-assigned except as noted in §3.3.
 
 ### 3.2 No Subdirectories
 
-An OKF-Flat bundle MUST contain no subdirectories. All `.md` files live
-at the bundle root. This is a conformance requirement (§3.10).
+An LKF bundle MUST contain no subdirectories. All `.md` files live
+at the bundle root. This is a conformance requirement (§3.11).
 
-Tooling that validates OKF-Flat bundles MUST flag subdirectories as
+Tooling that validates LKF bundles MUST flag subdirectories as
 conformance errors, not warnings.
+
+Source artifacts referenced by `resource` fields, source sections, or
+control files may live outside the bundle and may be referenced by URL,
+absolute path, relative path, dashboard identifier, policy identifier, or
+other locator. They are not part of LKF conformance unless they are
+inside the bundle directory. Because LKF bundles prohibit
+subdirectories, local artifact directories should be kept outside the
+bundle root.
 
 ### 3.3 Reserved Filenames
 
@@ -132,17 +154,41 @@ concept documents:
 | `index.md` | Root index. Entry point for the bundle. Required. |
 | `index_*.md` | Group index files. The `index_` prefix is reserved. |
 | `log.md` | Chronological history of bundle changes. |
+| `AGENTS.md` | Agent operating guide. Reserved control file. |
+| `.lkf-*.md` | LKF control files. Reserved for bundle operations. |
 
-Files named `index_*.md` MUST be group index files as described in §3.5.
+Files named `index_*.md` MUST be group index files. Files named
+`AGENTS.md` or `.lkf-*.md` are control files.
 
-### 3.4 Concept Files
+### 3.4 Control Files
+
+Control files are root-level operational documents that describe how agents,
+humans, and tools should work with the bundle. They are not domain concepts.
+The reserved control files are:
+
+| Filename | Purpose |
+|---|---|
+| `AGENTS.md` | Agent operating guide. Kept unhidden to match agent discovery conventions. |
+| `.lkf-reference.md` | Navigation and structure guide for this bundle. |
+| `.lkf-maintenance.md` | Bundle-specific maintenance conventions. |
+| `.lkf-audit.md` | Audit procedure for bundle health checks. |
+| `.lkf-*.md` | Future LKF control files. |
+
+Control files MAY include frontmatter. They are exempt from group membership
+and no-orphan requirements, MUST NOT be required in group indexes, and do
+not participate in concept reachability. Consumers SHOULD read relevant
+control files before modifying a bundle. Local Markdown links inside
+control files MAY be checked for broken-link warnings, but MUST NOT be
+used for concept reachability, group membership, or reverse-link analysis.
+
+### 3.5 Concept Files
 
 Every concept is a single `.md` file at the bundle root. A concept can
 represent any unit of knowledge: an SOP, policy, metric, source document,
 research note, term, decision, compliance requirement, application
 component, or idea.
 
-#### 3.4.1 Frontmatter
+#### 3.5.1 Frontmatter
 
 Every concept file MUST open with a YAML frontmatter block.
 
@@ -160,7 +206,7 @@ timestamp: <iso8601>    # Optional. Last meaningful update (YYYY-MM-DDTHH:MM:SSZ
 Only `type` is required. Producers MAY add additional frontmatter keys.
 Consumers MUST tolerate unknown keys without rejecting the file.
 
-#### 3.4.2 Body
+#### 3.5.2 Body
 
 The markdown body is free-form. Concepts SHOULD include cross-links to
 related concepts using standard relative markdown links. Section headings
@@ -192,17 +238,17 @@ timestamp: 2026-06-23T00:00:00Z
 - [First Week Orientation](first_week_orientation.md) — agenda for the first week
 ```
 
-### 3.5 Group Index Files
+### 3.6 Group Index Files
 
 Group index files enumerate the concepts in one logical grouping. They
 are concept files with additional structural requirements.
 
-#### 3.5.1 Naming
+#### 3.6.1 Naming
 
 Group index files are named `index_<grouping>.md`. The grouping label is
 author-assigned and should reflect the domain of the concepts within.
 
-#### 3.5.2 Frontmatter
+#### 3.6.2 Frontmatter
 
 Group index files MUST include a frontmatter block with:
 - `type: Index` — required
@@ -211,7 +257,7 @@ Group index files MUST include a frontmatter block with:
 
 The `description` MUST answer two questions: what kinds of concepts live
 in this group, and what kinds of questions this group can help answer.
-This description is the signal agents use in navigation step 2 (§3.9) to
+This description is the signal agents use in navigation step 2 (§3.10) to
 evaluate group relevance without reading the full body.
 
 ```yaml
@@ -226,7 +272,7 @@ timestamp: 2026-06-23T00:00:00Z
 ---
 ```
 
-#### 3.5.3 Body
+#### 3.6.3 Body
 
 The body of a group index MUST be a list of links to member concepts.
 Each entry SHOULD include a short description drawn from the concept's
@@ -240,19 +286,21 @@ own `description` frontmatter field.
 - [Equipment Request SOP](equipment_request.md) — workflow for requesting and issuing equipment
 ```
 
-#### 3.5.4 Multi-group membership
+#### 3.6.4 Multi-group membership
 
 A concept MAY appear in more than one group index. Both entries point to
 the same concept file — no duplication on disk. This is intentional:
 a concept that genuinely belongs to two groups is listed in both.
 
-### 3.6 Root Index (`index.md`)
+### 3.7 Root Index (`index.md`)
 
-The root index is the required entry point for any OKF-Flat bundle.
+The root index is the required entry point for any LKF bundle.
 
 - It MUST exist at the bundle root.
-- It MUST NOT contain frontmatter. (Bundles MAY include `okf_flat_version`
-  in a frontmatter block as an exception to this rule.)
+- It SHOULD NOT contain frontmatter unless the frontmatter is limited to
+  bundle-level metadata such as `lkf_version`.
+- Frontmatter on `index.md` MUST NOT change the root index navigation
+  requirements.
 - It MUST link to all group index files.
 - It SHOULD include a brief description of the bundle's purpose and scope.
 
@@ -269,10 +317,10 @@ Short description of what this bundle covers and who it is for.
 
 ## Reference
 
-- [How This Bundle Works](okf-flat-reference.md)
+- [How This Bundle Works](.lkf-reference.md)
 ```
 
-### 3.7 Cross-Linking
+### 3.8 Cross-Linking
 
 Concepts link to each other using standard relative markdown links.
 
@@ -287,10 +335,10 @@ link back to `a.md` unless the relationship is trivially one-directional.
 Consumers MUST tolerate broken links. A link whose target does not exist
 is not a malformed bundle.
 
-### 3.8 The No-Orphan Rule
+### 3.9 The No-Orphan Rule
 
-Every concept file (excluding `okf-flat-reference.md`) MUST be reachable
-from `index.md` via at most two hops:
+Every concept file, excluding control files, MUST be reachable from
+`index.md` via at most two hops:
 
 ```
 index.md → index_<grouping>.md → concept.md    (grouped concept)
@@ -302,13 +350,13 @@ invisible to the progressive disclosure protocol and SHOULD be resolved
 by adding the concept to an appropriate group index or to the root index
 directly.
 
-`okf-flat-reference.md` is exempt from the no-orphan rule. It is a
-built-in reference that describes the bundle format itself rather than
-the bundle's knowledge domain.
+Control files such as `AGENTS.md` and `.lkf-*.md` are exempt from the
+no-orphan rule. They describe how to work with the bundle rather than the
+bundle's knowledge domain.
 
-### 3.9 Agent Navigation Protocol
+### 3.10 Agent Navigation Protocol
 
-Agents consuming an OKF-Flat bundle SHOULD follow this traversal order,
+Agents consuming an LKF bundle SHOULD follow this traversal order,
 proceeding only as deep as the task requires:
 
 **Level 1 — Read `index.md`**
@@ -333,28 +381,33 @@ cross-links within those concepts only as far as the task requires.
 Agents MUST NOT assume that reading all files is required. Most tasks
 complete at level 3 or 4 without reading the full bundle.
 
-### 3.10 Conformance
+### 3.11 Conformance
 
-#### 3.10.1 A bundle is OKF-Flat conformant when:
+#### 3.11.1 A bundle is LKF conformant when:
 
 - All `.md` files are at the bundle root (no subdirectories).
 - A root `index.md` exists.
 - Every file named `index_*.md` has a frontmatter block with `type: Index`
   and a non-empty `description` field.
 - Every concept file has a frontmatter block with at least a `type` field.
-- Every concept file (except `okf-flat-reference.md`) is reachable from
-  `index.md` within two hops.
+- Every concept file, excluding control files, is reachable from `index.md`
+  within two hops.
 
-#### 3.10.2 Consumers MUST NOT reject a bundle for:
+#### 3.11.2 Consumers MUST NOT reject a bundle for:
 
 - Missing optional frontmatter fields on concept files.
 - Unknown `type` values.
 - Unknown additional frontmatter keys.
 - Broken cross-links.
 - Concepts appearing in more than one group index.
-- Presence of `okf-flat-reference.md` without a group index entry.
+- Presence of control files without group index entries.
 
-### 3.11 The `log.md` File
+Bootstrap prompts, generators, validators, and repository tooling are not
+part of bundle conformance. A conformant bundle may be created manually or
+by any tool, and it does not need to preserve or reference the prompt that
+created it.
+
+### 3.12 The `log.md` File
 
 An optional `log.md` at the bundle root records changes in append-only
 chronological order. It has no frontmatter. Entries use ISO 8601 dates.
@@ -392,7 +445,7 @@ But the same concept might equally belong to "People," "Compliance," or
 "First Week" depending on the reader's frame. The filesystem forces a
 choice that the link graph does not.
 
-By prohibiting subdirectories, OKF-Flat removes the implicit taxonomy and
+By prohibiting subdirectories, LKF removes the implicit taxonomy and
 makes all organizational relationships explicit. A concept belongs to
 whatever groups its index files say it belongs to. Groups are cheap to
 add, free to overlap, and can be restructured without moving files.
@@ -429,8 +482,8 @@ without a `description` forces a full body read on every navigation pass,
 degrading the protocol's efficiency guarantee.
 
 Requiring `description` on concept files would impose additional burden on
-producers for no protocol benefit — OKF deliberately leaves concept
-richness to the producer, and OKF-Flat inherits that stance everywhere
+producers for no protocol benefit. OKF deliberately leaves concept
+richness to the producer, and LKF adopts that stance everywhere
 except where the navigation model specifically depends on it.
 
 ### 4.4 Why the two-hop rule?
@@ -447,11 +500,11 @@ concepts to be linked directly from the root index. More than two hops
 would allow group indexes to link to other group indexes rather than
 concepts, which would create navigation depth without structure benefit.
 
-### 4.5 The `okf-flat-reference.md` exemption
+### 4.5 Control file exemptions
 
-The reference file describes the bundle format itself, not the bundle's
-knowledge domain. It is a meta-document — useful to any reader who wants
-to understand how to navigate the bundle, but not a subject-matter concept
-that belongs in any group. Making it exempt from the no-orphan rule lets
-it serve its purpose without requiring producers to create an artificial
-group index entry for it.
+Control files describe the bundle format, maintenance conventions, audit
+procedure, and agent operating guidance. They are useful to readers and
+agents, but they are not subject-matter concepts that belong in domain
+groups. Making them exempt from the no-orphan rule lets them serve their
+operational purpose without requiring producers to create artificial group
+index entries for them.

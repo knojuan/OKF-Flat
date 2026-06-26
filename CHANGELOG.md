@@ -1,51 +1,45 @@
 # Changelog
 
-All notable changes to OKF-Flat are recorded here.
+All notable changes to Linked Knowledge Format (LKF) are recorded here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-Versioning follows `<major>.<minor>.<patch>-<status>`.
+Versioning follows `<major>.<minor>-<status>` while the spec is in draft.
 
 ---
 
-## v0.1.2-draft - 2026-06-26
+## v0.1-draft - 2026-06-26
 
-Draft documentation update.
+Draft specification in progress. All sections remain subject to change while
+status is draft.
+
+### Added
+- Added full normative specification in `spec/linked-knowledge-format-spec.md`.
+- Added conformance validator behavior specification in `tools/validate.md`.
+- Added `bundle/` for copyable knowledge-base control files.
+- Added bootstrap prompts for initializing an empty knowledge base and
+  converting an existing directory.
 
 ### Changed
-- Reframed OKF-Flat documentation around general knowledge bases by default,
+- Reframed LKF documentation around general knowledge bases by default,
   with application documentation as one supported use case.
+- Reframed the OKF relationship as an OKF-inspired profile with
+  OKF-compatible domain concepts and profile-specific control files.
+- Defined `AGENTS.md` and `.lkf-*.md` as reserved control files.
+- Moved bundle-local reference, maintenance, audit, and agent files into
+  `bundle/`.
+- Clarified that root index frontmatter is only for bundle metadata, source
+  artifacts live outside bundle conformance, control-file local links may be
+  warning-checked, and bootstrap prompts are not conformance requirements.
+- Changed `log.md` guidance to append-only chronological order.
 - Updated maintenance, audit, and agent templates to refer to source
   artifacts and coverage gaps instead of app-specific file terminology.
 - Made audit guidance Git-aware but not Git-dependent.
 - Replaced the maintained concept-type table expectation with guidance to
   prefer existing types and add new types as needed.
 - Parameterized the audit Git tag/checkpoint as `[AUDIT_REF]`.
-
----
-
-## v0.1.1-draft - 2026-06-26
-
-Draft specification update.
-
-### Changed
-- Changed `log.md` guidance to append-only chronological order.
 - Expanded the audit prompt with generic latent-concept, new-group, and
   group-split discovery checks.
 
----
-
-## v0.1.0-draft - 2026-06-23
-
-Initial draft specification.
-
-### Added
-- Full normative specification (`spec/okf-flat-spec.md`)
-- Built-in bundle reference file (`spec/okf-flat-reference.md`)
-- Audit prompt template (`tools/audit-prompt.md`)
-- Bundle maintenance template (`tools/okf-flat-maintenance.md`)
-- Conformance validator specification (`tools/validate.md`)
-
 ### Divergences from OKF v0.1
-- No subdirectories permitted in a bundle
-- `description` field required on group index files (`index_*.md`)
-
-All sections subject to change while status is draft.
+- No subdirectories permitted in a bundle.
+- `description` field required on group index files (`index_*.md`).
+- `AGENTS.md` and `.lkf-*.md` reserved as optional LKF control files.

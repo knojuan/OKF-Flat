@@ -1,7 +1,7 @@
-# OKF-Flat Conformance Validator Specification
+# Linked Knowledge Format (LKF) Conformance Validator Specification
 
 This document specifies the behavior of a conformance validator for
-OKF-Flat bundles. It is a prose specification — not an implementation —
+Linked Knowledge Format (LKF) bundles. It is a prose specification — not an implementation —
 sufficient for any developer to build a validator in any language.
 
 ---
@@ -14,7 +14,7 @@ normative requirements (`MUST`). Warnings indicate violations of
 recommendations (`SHOULD`) that do not affect conformance but reduce
 bundle quality.
 
-A bundle with zero errors is OKF-Flat conformant. Warnings do not affect
+A bundle with zero errors is LKF conformant. Warnings do not affect
 conformance status.
 
 ---
@@ -46,7 +46,7 @@ Warnings do not affect exit code.
 **Example output:**
 
 ```
-OKF-Flat Conformance Report
+LKF Conformance Report
 Bundle: /path/to/bundle
 Status: NON-CONFORMANT (2 errors, 1 warning)
 
@@ -79,8 +79,8 @@ WARNINGS
 
 ### E-NOFRONTMATTER — Concept file missing frontmatter
 
-**Trigger:** A `.md` file that is not `index.md`, `log.md`, or
-`okf-flat-reference.md` has no YAML frontmatter block (no opening `---`).
+**Trigger:** A `.md` file that is not `index.md`, `log.md`, `AGENTS.md`,
+or `.lkf-*.md` has no YAML frontmatter block (no opening `---`).
 **Message:** `Concept file has no frontmatter block`
 
 ---
@@ -106,7 +106,7 @@ not `Index`.
 **Trigger:** A file named `index_*.md` has no `description` field in
 its frontmatter, or `description` is present but empty.
 **Message:** `Group index missing required description field`
-**Note:** This is OKF-Flat divergence D2. A non-empty description is a
+**Note:** This is LKF divergence D2. A non-empty description is a
 conformance requirement on group index files, not a recommendation.
 
 ---
@@ -115,7 +115,7 @@ conformance requirement on group index files, not a recommendation.
 
 **Trigger:** A concept file is not linked from `index.md` directly, and
 is not linked from any group index file that is itself linked from
-`index.md`. Files exempt from this rule: `okf-flat-reference.md`,
+`index.md`. Files exempt from this rule: `AGENTS.md`, `.lkf-*.md`,
 `log.md`.
 **Message:** `Concept is not reachable from index.md within two hops`
 **Algorithm:**
@@ -151,10 +151,10 @@ is empty.
 
 ---
 
-### W-BROKENLINK — Cross-link target does not exist
+### W-BROKENLINK — Local Markdown link target does not exist
 
-**Trigger:** A markdown link in a concept body points to a `.md` file
-that does not exist in the bundle directory.
+**Trigger:** A markdown link in a concept or control-file body points to
+a local `.md` file that does not exist in the bundle directory.
 **Message:** `Broken cross-link: target '<filename>.md' not found`
 **Note:** Per the spec, broken links are not conformance errors.
 Consumers must tolerate them. This warning helps producers maintain
@@ -195,7 +195,8 @@ all rules:
 |---|---|
 | `index.md` | E-NOFRONTMATTER, E-NOTYPE, E-ORPHAN |
 | `log.md` | E-NOFRONTMATTER, E-NOTYPE, E-ORPHAN, all W- rules |
-| `okf-flat-reference.md` | E-ORPHAN, W-NOGROUP |
+| `AGENTS.md` | E-NOFRONTMATTER, E-NOTYPE, E-ORPHAN, W-NOGROUP |
+| `.lkf-*.md` | E-NOFRONTMATTER, E-NOTYPE, E-ORPHAN, W-NOGROUP |
 
 ---
 
@@ -203,15 +204,20 @@ all rules:
 
 - Parse frontmatter by detecting the opening `---` on the first line and
   the closing `---` on a subsequent line. Content between is YAML.
+- Treat `AGENTS.md` and `.lkf-*.md` as control files, not domain concepts.
+  They do not count for E-ORPHAN, W-NOGROUP, or reverse-link analysis.
+- Include control files in W-BROKENLINK scans for local Markdown links.
+  A broken local link in a control file is a warning only and never affects
+  concept reachability.
 - Parse markdown links using the pattern `[text](target)`. Extract only
   links where target ends in `.md` and contains no `://` (relative links
   only). Ignore external URLs.
 - Resolve relative Markdown targets against the file containing the link,
   then normalize them to bundle-root filenames for reachability checks.
-  Because OKF-Flat bundles have no subdirectories, internal concept links
+  Because LKF bundles have no subdirectories, internal concept links
   normally resolve to `filename.md` or `./filename.md`.
 - The validator should not attempt to validate frontmatter field values
   beyond presence and non-emptiness. Type vocabulary is producer-defined
   (except `Index` on group indexes).
-- Unknown frontmatter keys MUST NOT produce warnings. OKF and OKF-Flat
+- Unknown frontmatter keys MUST NOT produce warnings. OKF and LKF
   both require consumers to tolerate unknown keys.

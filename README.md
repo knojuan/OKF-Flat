@@ -1,11 +1,13 @@
-# OKF-Flat
+# Linked Knowledge Format
 
-**OKF-Flat** is a profile of the [Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-that replaces directory hierarchy with explicit link-based navigation.
-Every concept file lives in a single flat directory. All organization is
-carried by cross-links and typed index files.
+**Linked Knowledge Format (LKF)** is an OKF-inspired profile for flat,
+agent-navigable knowledge bundles. Domain concept files follow the
+[Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+frontmatter and linking conventions. LKF adds layout constraints,
+group-index requirements, and optional profile-specific control files for
+agent operation.
 
-> **Status:** Draft — v0.1.2
+> **Status:** Draft — v0.1-draft
 > **License:** Apache 2.0
 > **Upstream:** [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) by Google Cloud
 
@@ -18,7 +20,7 @@ it creates a subtle tension: a directory hierarchy implies a primary taxonomy
 that may not reflect how concepts actually relate. A concept that belongs to
 three groups can only live in one directory.
 
-OKF-Flat resolves this by making the link graph the sole organizational
+LKF resolves this by making the link graph the sole organizational
 structure. Concepts live in one flat directory. Grouping is expressed through
 typed `index_<grouping>.md` files that enumerate members. A concept can belong
 to multiple groups by appearing in multiple index files — no duplication on
@@ -32,18 +34,17 @@ of detail the task requires.
 
 ## What Changes from OKF
 
-OKF-Flat makes two targeted changes to OKF:
+LKF makes targeted changes relative to OKF:
 
-| OKF behavior | OKF-Flat behavior | Reason |
+| OKF behavior | LKF behavior | Reason |
 |---|---|---|
 | Directory structure left to producer | No subdirectories permitted | Filesystem hierarchy implies a primary taxonomy; flat structure forces all relationships to be expressed as explicit links |
 | `description` optional on all files | `description` required on group index files | Group index descriptions are the frontmatter-scan signal in the four-level navigation protocol; without them agents must read full bodies to evaluate relevance |
+| Only OKF reserved filenames are defined | `AGENTS.md` and `.lkf-*.md` are reserved as optional control files | Agents need predictable local instructions, maintenance guidance, and audit procedures without mixing operational files into domain concepts |
 
-Everything else — frontmatter schema, cross-linking rules, reserved
-filenames, permissive consumption rules — is inherited unchanged from OKF.
-
-**An OKF-Flat bundle is a valid OKF bundle.**
-An OKF bundle is OKF-Flat conformant only if it uses no subdirectories.
+LKF domain concept files are OKF-compatible. The complete LKF
+directory may also include profile-specific control files that are part of
+LKF but are not domain concepts.
 
 ---
 
@@ -51,12 +52,15 @@ An OKF bundle is OKF-Flat conformant only if it uses no subdirectories.
 
 ```
 bundle/
-├── index.md                  ← root index, no frontmatter
+├── index.md                  ← root index, optional bundle metadata only
 ├── index_sops.md             ← group index, type: Index, description required
 ├── index_decisions.md        ← group index
 ├── onboarding_checklist.md   ← concept file
 ├── approval_policy.md        ← concept file
-├── okf-flat-reference.md     ← built-in reference, ships in every bundle
+├── AGENTS.md                 ← agent operating guide
+├── .lkf-reference.md         ← built-in navigation guide
+├── .lkf-maintenance.md       ← maintenance conventions
+├── .lkf-audit.md             ← audit procedure
 └── log.md                    ← change history
 ```
 
@@ -108,7 +112,7 @@ timestamp: 2026-06-23T00:00:00Z
 
 ## Four-Level Navigation Protocol
 
-Agents navigate OKF-Flat bundles using progressive disclosure:
+Agents navigate LKF bundles using progressive disclosure:
 
 1. **Read `index.md`** — understand bundle scope and available groups
 2. **Scan frontmatter of `index_*.md` files** — read `title` and `description`
@@ -120,25 +124,39 @@ Most tasks complete at level 3 or 4 without reading the full bundle.
 
 ---
 
-## Using OKF-Flat
+## Using LKF
 
-**In a new bundle:** Copy `spec/okf-flat-reference.md` into your bundle
-directory. Create `index.md`, your group index files, and your concept files
-following the conventions in the spec.
+**Bootstrap with an agent:** Open an agent in the target directory and point
+it at one of the prompts in `prompts/`:
 
-**In a maintained knowledge base:** Also copy `tools/okf-flat-maintenance.md`
-into the bundle as `okf-flat-maintenance.md` and adapt it to your domain:
-SOPs, business operations, research notes, application documentation,
-personal ideas, or any other knowledge collection.
+- `prompts/init-empty-knowledgebase.md` starts a new knowledge base from
+  user-provided purpose, audience, groups, and seed concepts.
+- `prompts/convert-directory-to-knowledgebase.md` inventories an existing
+  directory, proposes concepts and groups, and creates an approved bundle.
+
+Both prompts create a `knowledge/` directory and copy the control files from
+`bundle/`: `AGENTS.md`, `.lkf-reference.md`, `.lkf-maintenance.md`, and
+`.lkf-audit.md`.
+
+Bootstrap prompts are convenience tooling, not conformance requirements.
+Any manually or automatically created bundle is valid if it satisfies the
+spec.
+
+**Manual setup:** Create `index.md`, group indexes, concepts, and `log.md`
+following the spec. Copy and adapt the control files from `bundle/` when
+agents or maintainers need local operating guidance.
+
+**Repository layout:** `spec/` contains the normative spec, `bundle/`
+contains files intended to be copied into a knowledge base, `prompts/`
+contains agent bootstrap prompts, and `tools/` contains tool behavior specs.
 
 **Tooling:** See `tools/validate.md` for the conformance validator spec.
-See `tools/audit-prompt.md` for the periodic audit prompt.
 
 ---
 
 ## Contributing
 
-Issues and pull requests welcome. The spec is at `spec/okf-flat-spec.md`.
+Issues and pull requests welcome. The spec is at `spec/linked-knowledge-format-spec.md`.
 All proposals should include a rationale that explains why the change is
-necessary given OKF-Flat's design principles, and should update the
+necessary given LKF's design principles, and should update the
 divergence table in the spec if the change affects OKF compatibility.
