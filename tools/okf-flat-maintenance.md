@@ -1,15 +1,15 @@
 ---
 type: Reference
 title: Bundle Maintenance Conventions
-description: How this bundle is maintained, how application files are referenced, and what triggers a documentation update. Read this before adding or changing bundle content.
+description: How this bundle is maintained, how sources and artifacts are referenced, and what triggers a knowledge update. Read this before adding or changing bundle content.
 tags: [reference, maintenance, conventions]
 timestamp: 2026-06-26T00:00:00Z
 ---
 
 # Bundle Maintenance Conventions
 
-This file describes how this bundle stays current with the application it
-documents. It is written for both humans and agents contributing to the
+This file describes how this bundle stays current with the knowledge domain
+it documents. It is written for both humans and agents contributing to the
 bundle.
 
 For navigation conventions, see [How This Bundle Works](okf-flat-reference.md).
@@ -18,85 +18,87 @@ For navigation conventions, see [How This Bundle Works](okf-flat-reference.md).
 
 ## What This Bundle Documents
 
-[DESCRIBE THE APPLICATION HERE — its purpose, primary components, and the
-scope of what this bundle covers. Example: "This bundle documents the
-internal API, data models, background jobs, and key business processes for
-the Billing Service."]
+[DESCRIBE THE KNOWLEDGE DOMAIN HERE - its purpose, audience, and scope.
+Examples: "This bundle documents operating procedures and policies for the
+Customer Support team," "This bundle captures research notes and decisions
+for the Climate Data project," or "This bundle documents the architecture,
+processes, and business rules for the Billing Service."]
 
 ---
 
 ## When to Update the Bundle
 
-Update the bundle whenever you add or change something that other developers
-or agents would need to understand to work with this application:
+Update the bundle whenever you add or change something that future readers
+or agents would need to understand this knowledge domain:
 
-- Adding an endpoint, route, controller action, or handler
-- Adding or modifying a data model, schema, or migration
-- Adding or changing a background job, worker, or scheduled task
-- Adding or modifying an external service integration or API dependency
-- Changing a significant business rule, workflow, or process
-- Renaming, moving, or removing any of the above
+- Adding or modifying a standard operating procedure, checklist, or workflow
+- Adding or changing a policy, rule, requirement, or decision
+- Adding or refining a definition, taxonomy, metric, or key concept
+- Adding or changing a source artifact, reference document, dashboard, note,
+  recording, code file, or external system that concepts depend on
+- Changing a significant business process, research conclusion, operational
+  practice, or application behavior
+- Renaming, moving, archiving, or removing any of the above
 
 When in doubt, document it.
 
 ---
 
-## How to Reference Application Files
+## How to Reference Sources and Artifacts
 
-The `resource` field in a concept's frontmatter points to the primary
-application file the concept describes.
+The `resource` field in a concept's frontmatter points to the primary source
+or supporting artifact the concept describes. A resource may be a URL, file
+path, dashboard, policy, source document, note, recording, code file, or
+other stable reference.
 
 **Rules:**
-- Derive file paths from the repo's directory structure directly. Do not
-  guess or assume conventions — read the repo.
-- Always use paths relative to the repo root. Absolute paths break across
-  development environments.
-- Use file-level paths only. Do not reference line numbers or method names —
-  these change frequently and silently invalidate the reference.
-- If a concept spans multiple files, set `resource` to the most important
-  one and list the others in an `## Implementation` section in the body.
-- Do not set `resource` to a file that does not currently exist.
+- Prefer stable references that another reader can open or verify.
+- Use paths relative to the relevant project or bundle root when referencing
+  local files. Absolute paths break across environments.
+- Do not reference line numbers or volatile anchors unless the source is
+  stable enough for those references to remain useful.
+- If a concept spans multiple sources, set `resource` to the most important
+  one and list the others in an `## Sources` or `## Implementation` section
+  in the body.
+- Do not set `resource` to a source that does not currently exist unless the
+  concept is explicitly tracking a planned or missing source.
 
-**Non-obvious path exceptions:**
+**Non-obvious source exceptions:**
 
-[Note any paths that cannot be reliably inferred from the directory
-structure — generated files that should not be referenced directly, or
-service roots in a monorepo that are not at the repo root. Leave blank
-if none apply.]
+[Note any sources that cannot be reliably inferred from the bundle or project
+structure - generated artifacts, private systems, external dashboards, archived
+documents, or service roots in a larger repository. Leave blank if none apply.]
 
 ---
 
-## Concept Types Used in This Bundle
+## Concept Type Guidance
 
-The following `type` values are used consistently. Use these when creating
-new concept files. Document new types in this table when introduced.
+Prefer `type` values already in use in the bundle when they accurately
+describe a new concept. Add a new `type` when existing values would
+misrepresent the concept or hide a useful distinction.
 
-| Type | What it covers |
-|---|---|
-| `Endpoint` | A single API route or controller action |
-| `Model` | A data model and its schema |
-| `Job` | A background job or scheduled task |
-| `Integration` | An external service dependency |
-| `Process` | A multi-step business or operational workflow |
-| `Decision` | An architectural decision record (ADR) |
-| `Compliance` | A regulatory or internal compliance requirement |
-| `Term` | A domain term or definition |
-| `Index` | A group index file (reserved) |
-| `Reference` | A built-in reference document (reserved) |
+To discover current types, scan concept frontmatter across the bundle. Keep
+type names short, concrete, and reusable. Do not create a new type for a
+one-off wording preference when an existing type already fits.
+
+Common starting points include `SOP`, `Process`, `Policy`, `Decision`,
+`Term`, `Metric`, `Note`, `Reference`, and `Index`. Application-oriented
+bundles may also use types such as `Endpoint`, `Model`, `Job`,
+`Integration`, or `Component`.
 
 ---
 
 ## Cross-Linking Expectations
 
-Cross-links are the primary organizational structure of this bundle.
-Apply them liberally.
+Cross-links are the primary organizational structure of this bundle. Apply
+them liberally.
 
 A concept SHOULD link to another when:
-- One concept's `resource` file imports or calls another concept's file
-- One concept feeds data to or depends on the output of another
+- One concept depends on, constrains, or explains another
+- One concept is a source, input, output, exception, or follow-up for another
 - Understanding one concept requires understanding another
-- Two concepts are frequently used or changed together
-- A compliance requirement applies to a concept
+- Two concepts are frequently used, changed, reviewed, or discussed together
+- A policy, decision, or compliance requirement applies to a concept
 
 Links use standard Markdown and are bidirectional. If `a.md` links to
 `b.md`, `b.md` should link back to `a.md` unless the relationship is
@@ -111,7 +113,7 @@ To discover available groups, list files matching that pattern and read
 their `title` and `description` frontmatter fields.
 
 Every concept must belong to at least one group. A concept may belong to
-more than one group — list it in each applicable group index, pointing to
+more than one group - list it in each applicable group index, pointing to
 the same concept file.
 
 Creating a new group is warranted when:
@@ -134,23 +136,26 @@ Append an entry to `log.md` whenever you change the bundle:
 
 ```markdown
 ## YYYY-MM-DD
-- Added `<filename>.md` — <one line description>
-- Updated `<filename>.md` — <what changed and why>
-- Added cross-link from `<a>.md` to `<b>.md` — <relationship>
-- Updated `index_<grouping>.md` — <what was added or changed>
+- Added `<filename>.md` - <one line description>
+- Updated `<filename>.md` - <what changed and why>
+- Added cross-link from `<a>.md` to `<b>.md` - <relationship>
+- Updated `index_<grouping>.md` - <what was added or changed>
 ```
 
-Keep entries factual and brief. The log is a change record, not a
-narrative.
+Keep entries factual and brief. The log is a change record, not a narrative.
 
 ---
 
 ## Audit Process
 
 This bundle is audited periodically. The audit reviews changes since the
-last audit using `git diff okf-audit HEAD`, checks for broken resource
-references, missing cross-links, orphaned concepts, and documentation gaps.
+last audit when a change source is available, and otherwise reviews the
+full bundle. It checks for broken source references, missing cross-links,
+orphaned concepts, coverage gaps, latent concepts, and candidate group
+changes.
 
-The `okf-audit` git tag marks the point of the last completed audit. Do
-not move this tag manually — it is advanced by the audit process after
-each completed audit.
+If the bundle is maintained in Git, an audit tag such as `okf-audit` may
+mark the point of the last completed audit. Set this bundle's audit tag
+name here if it differs: `[AUDIT_REF]`. If Git is not available, use
+`log.md` entries, file modification times, source-system metadata, or
+another local convention to identify what changed since the last audit.

@@ -6,7 +6,23 @@ Versioning follows `<major>.<minor>.<patch>-<status>`.
 
 ---
 
-## v0.1.1-draft — 2026-06-26
+## v0.1.2-draft - 2026-06-26
+
+Draft documentation update.
+
+### Changed
+- Reframed OKF-Flat documentation around general knowledge bases by default,
+  with application documentation as one supported use case.
+- Updated maintenance, audit, and agent templates to refer to source
+  artifacts and coverage gaps instead of app-specific file terminology.
+- Made audit guidance Git-aware but not Git-dependent.
+- Replaced the maintained concept-type table expectation with guidance to
+  prefer existing types and add new types as needed.
+- Parameterized the audit Git tag/checkpoint as `[AUDIT_REF]`.
+
+---
+
+## v0.1.1-draft - 2026-06-26
 
 Draft specification update.
 
@@ -17,7 +33,7 @@ Draft specification update.
 
 ---
 
-## v0.1.0-draft — 2026-06-23
+## v0.1.0-draft - 2026-06-23
 
 Initial draft specification.
 

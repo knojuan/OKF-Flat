@@ -1,48 +1,83 @@
 ## Knowledge Bundle
 
-This project maintains an OKF-Flat knowledge bundle at `knowledge/`.
+This project maintains an OKF-Flat knowledge bundle at `[BUNDLE_PATH]`.
 
 Before contributing to the bundle, read:
 
-- `knowledge/okf-f-reference.md` — navigation and structure conventions
-- `knowledge/okf-f-maintenance.md` — this project's maintenance conventions
+- `[BUNDLE_PATH]/okf-flat-reference.md` - navigation and structure conventions
+- `[BUNDLE_PATH]/okf-flat-maintenance.md` - this bundle's maintenance conventions
 
-### Session start
+### Audit Awareness
 
-Run `git diff okf-audit HEAD --name-only -- knowledge/` at the start of every session. If the output is non-empty, ask the user:
+Suggest an audit when there is evidence the bundle may be stale or has
+unreviewed changes. Do not assume Git is available.
 
-> "The knowledge bundle has unreviewed changes. Run an audit before we proceed, or save it for later?"
+Suggest an audit when any of these are true:
 
-If yes, follow the instructions in `tools/okf-flat_audit.md`. If no, proceed and do not raise the audit question again this session.
+- The user says the bundle, source artifacts, or domain knowledge changed
+  since the last review
+- You notice changed, new, moved, or deleted bundle files
+- You notice changed, new, moved, or deleted source artifacts that concepts
+  may cover
+- A concept's `resource`, `## Sources`, or `## Implementation` reference is
+  broken, stale, or inconsistent with the current source
+- A task reveals knowledge that should be captured but is not represented in
+  the bundle
+- The user asks for a broad review, cleanup, validation, or knowledge-base
+  health check
 
-### Inline maintenance
+When suggesting an audit, ask:
 
-Update the bundle as part of any task that creates or changes application knowledge. Do not defer updates to the audit. Consult `knowledge/okf-f-maintenance.md` for what triggers an update and how to apply one.
+> "This may have affected the knowledge bundle. Run an audit now, or save it for later?"
 
-## Codebase Understanding
+If yes, follow the instructions in `tools/audit-prompt.md`. If no, proceed
+and do not raise the audit question again for the same evidence during this
+session.
 
-The knowledge bundle at `knowledge/` is the first stop for any question about this codebase. It contains pre-reasoned concept files covering architecture, data models, endpoints, decisions, compliance requirements, and operational processes — with direct links to the relevant source files.
+### Inline Maintenance
 
-**Before exploring code:**
+Update the bundle as part of any task that creates or changes knowledge
+covered by the bundle. Do not defer clear updates to the audit. Consult
+`[BUNDLE_PATH]/okf-flat-maintenance.md` for what triggers an update and how
+to apply one.
 
-1. Navigate the bundle using the four-level protocol in `knowledge/okf-f-reference.md`. Start at `knowledge/index.md`, scan group index frontmatter, then read targeted concept files.
-2. Use the `resource` field and `## Implementation` sections in concept files to locate the specific source files relevant to your task.
-3. Follow cross-links between concepts to understand relationships before reading any code.
+## Knowledge Domain Understanding
 
-**Escalate to direct code exploration when:**
+The knowledge bundle at `[BUNDLE_PATH]` is the first stop for any question
+about the domain it covers. It contains pre-reasoned concept files for
+procedures, policies, decisions, definitions, metrics, notes, artifacts,
+systems, or other domain knowledge, with links to relevant sources where
+available.
 
-- The bundle has no concept covering the component you need
-- The concept's `resource` path leads to code whose behavior differs from what the concept describes — this is a documentation gap; note it
-- You need implementation detail below the level the concept captures (specific function signatures, internal logic, error handling)
-- The task requires understanding code added since the last bundle update
+**Before exploring primary sources:**
+
+1. Navigate the bundle using the four-level protocol in
+   `[BUNDLE_PATH]/okf-flat-reference.md`. Start at `[BUNDLE_PATH]/index.md`,
+   scan group index frontmatter, then read targeted concept files.
+2. Use the `resource` field and `## Sources` or `## Implementation` sections
+   in concept files to locate specific source artifacts relevant to your task.
+3. Follow cross-links between concepts to understand relationships before
+   reading additional sources.
+
+**Escalate to direct source exploration when:**
+
+- The bundle has no concept covering the topic you need
+- The concept's `resource` points to a source whose current content differs
+  from what the concept describes; this is a coverage gap
+- You need detail below the level the concept captures
+- The task requires understanding material added since the last bundle update
 
 **When you escalate:**
 
-- Read only the files the bundle directed you to, plus their immediate dependencies — do not scan the full codebase unless the bundle gave you no starting point
-- If the code reveals something the bundle should capture, flag it as a documentation gap and update the bundle as part of the task per the inline maintenance obligation above
+- Read only the sources the bundle directed you to, plus immediate related
+  sources needed for the task. Do not scan the full source set unless the
+  bundle gave you no starting point.
+- If a source reveals something the bundle should capture, flag it as a
+  coverage gap and update the bundle as part of the task per the inline
+  maintenance obligation above.
 
 **What the bundle cannot replace:**
 
-- Current compiler errors or test failures — always check live output
-- Generated files — read from disk, not from concept descriptions
-- The exact current state of a file under active development
+- Current live system output, compiler errors, test failures, or runtime logs
+- Generated artifacts that must be read from disk or their source system
+- The exact current state of any source under active development

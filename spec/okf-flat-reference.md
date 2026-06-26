@@ -18,9 +18,10 @@ everything you need to navigate and contribute to this bundle is here.
 ## What This Bundle Is
 
 This bundle is a flat directory of markdown files. Each file represents
-one concept — a table, metric, API, runbook, process, term, decision,
-or idea. Files link to each other to express relationships. The directory
-has no subfolders. All organization is carried by links and index files.
+one concept - an SOP, policy, metric, source document, research note,
+term, decision, application component, or idea. Files link to each other
+to express relationships. The directory has no subfolders. All
+organization is carried by links and index files.
 
 ---
 
@@ -62,7 +63,7 @@ The primary unit of knowledge. Each concept file covers one topic.
 type: <what kind of concept this is>
 title: <human-readable name>
 description: <one or two sentence summary>
-resource: <link to the source this concept describes, if any>
+resource: <canonical source or supporting artifact, if any>
 tags: [<labels for filtering>]
 timestamp: <date of last meaningful update>
 ---
@@ -103,7 +104,7 @@ order. No frontmatter. Read it to understand what has changed recently.
 Concepts link to each other using standard markdown links:
 
 ```markdown
-See the [Subscriptions table](subscriptions.md) for source data.
+See the [Access Policy](access_policy.md) for access rules.
 ```
 
 The link graph is the real structure of this bundle. A concept may be

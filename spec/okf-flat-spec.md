@@ -1,6 +1,6 @@
 # OKF-Flat Specification
 
-**Version:** 0.1.1-draft
+**Version:** 0.1.2-draft
 **Status:** Draft
 **Published:** 2026-06-26
 **License:** Apache 2.0
@@ -32,8 +32,9 @@ OKF-Flat is for teams and individuals who:
 - Are building knowledge bundles that will be consumed by AI agents
 - Want explicit, traversable navigation rather than implicit filesystem
   organization
-- Are documenting application codebases where cross-cutting concerns span
-  natural directory boundaries
+- Are documenting SOPs, business processes, research notes, application
+  internals, personal ideas, or other knowledge collections where
+  cross-cutting concerns span natural directory boundaries
 - Want a deterministic navigation contract they can give to any agent
   without per-bundle instructions
 
@@ -137,8 +138,9 @@ Files named `index_*.md` MUST be group index files as described in §3.5.
 ### 3.4 Concept Files
 
 Every concept is a single `.md` file at the bundle root. A concept can
-represent any unit of knowledge: a table, metric, API, runbook, process,
-term, decision, compliance requirement, or idea.
+represent any unit of knowledge: an SOP, policy, metric, source document,
+research note, term, decision, compliance requirement, application
+component, or idea.
 
 #### 3.4.1 Frontmatter
 
@@ -149,7 +151,7 @@ Every concept file MUST open with a YAML frontmatter block.
 type: <string>          # Required. The kind of concept this file describes.
 title: <string>         # Recommended. Human-readable name.
 description: <string>   # Recommended. One or two sentence summary.
-resource: <uri>         # Optional. Canonical source (URL, repo path, etc).
+resource: <uri>         # Optional. Canonical source or supporting artifact.
 tags: [<string>, ...]   # Optional. Free-form labels for filtering.
 timestamp: <iso8601>    # Optional. Last meaningful update (YYYY-MM-DDTHH:MM:SSZ).
 ---
@@ -164,27 +166,30 @@ The markdown body is free-form. Concepts SHOULD include cross-links to
 related concepts using standard relative markdown links. Section headings
 and body structure are at the producer's discretion.
 
-**Example concept file — `mrr.md`:**
+**Example concept file — `onboarding_checklist.md`:**
 
 ```markdown
 ---
-type: Metric
-title: Monthly Recurring Revenue
-description: Recurring subscription revenue normalized to a monthly period.
-resource: dashboard://revenue/mrr
-tags: [revenue, saas, finance]
+type: SOP
+title: New Hire Onboarding Checklist
+description: Repeatable checklist for preparing a new hire before and during
+  their first week.
+resource: policy://people/onboarding
+tags: [people, onboarding, operations]
 timestamp: 2026-06-23T00:00:00Z
 ---
 
-# Calculation
+# Steps
 
-MRR is the sum of all active subscription amounts normalized to one month.
+1. Confirm start date and manager.
+2. Prepare required account access.
+3. Schedule first-week orientation sessions.
 
 ## Related
 
-- [Subscriptions table](subscriptions.md) — source data
-- [ARR](arr.md) — annual equivalent
-- [Revenue Review Playbook](playbook_revenue_review.md) — how this is used
+- [Access Policy](access_policy.md) — access rules used during onboarding
+- [Equipment Request SOP](equipment_request.md) — hardware request workflow
+- [First Week Orientation](first_week_orientation.md) — agenda for the first week
 ```
 
 ### 3.5 Group Index Files
@@ -212,11 +217,11 @@ evaluate group relevance without reading the full body.
 ```yaml
 ---
 type: Index
-title: Metrics
-description: Business and operational metrics. Use this group to answer
-  questions about how key figures are calculated, what their sources are,
-  and how they relate to each other.
-tags: [index, metrics]
+title: SOPs
+description: Standard operating procedures and repeatable workflows. Use
+  this group to answer questions about when a process starts, what steps
+  to follow, and how exceptions are handled.
+tags: [index, sop, process]
 timestamp: 2026-06-23T00:00:00Z
 ---
 ```
@@ -230,9 +235,9 @@ own `description` frontmatter field.
 ```markdown
 # Metrics
 
-- [Monthly Recurring Revenue](mrr.md) — recurring subscription revenue normalized to a monthly period
-- [Annual Recurring Revenue](arr.md) — annualized equivalent of MRR
-- [Churn Rate](churn_rate.md) — percentage of subscribers lost in a period
+- [New Hire Onboarding Checklist](onboarding_checklist.md) — steps for preparing access, equipment, and first-week orientation
+- [Vendor Approval Process](vendor_approval.md) — workflow for reviewing and approving a new vendor
+- [Equipment Request SOP](equipment_request.md) — workflow for requesting and issuing equipment
 ```
 
 #### 3.5.4 Multi-group membership
@@ -258,9 +263,9 @@ Short description of what this bundle covers and who it is for.
 
 ## Groups
 
-- [Metrics](index_metrics.md) — business and operational metrics
-- [Tables](index_tables.md) — database tables and views
-- [Runbooks](index_runbooks.md) — operational procedures
+- [SOPs](index_sops.md) — standard operating procedures and workflows
+- [Policies](index_policies.md) — rules and requirements that govern decisions
+- [Ideas](index_ideas.md) — notes, hypotheses, and exploratory thoughts
 
 ## Reference
 
@@ -272,7 +277,7 @@ Short description of what this bundle covers and who it is for.
 Concepts link to each other using standard relative markdown links.
 
 ```markdown
-See the [Subscriptions table](subscriptions.md) for source data.
+See the [Access Policy](access_policy.md) for access rules.
 ```
 
 Links MAY be annotated with inline context describing the relationship.
@@ -362,8 +367,8 @@ New entries are added to the end of the file.
 - Initial bundle created
 
 ## 2026-06-23
-- Added `churn_rate.md` — subscriber loss rate metric
-- Updated `mrr.md` — added forward link to [Churn Rate](churn_rate.md)
+- Added `access_policy.md` — access requirements used during onboarding
+- Updated `onboarding_checklist.md` — added forward link to [Access Policy](access_policy.md)
 ```
 
 ---
@@ -381,10 +386,11 @@ organization, directory hierarchy introduces friction rather than removing
 it.
 
 The core problem is that a directory placement implies membership in a
-single primary category. The file `metrics/mrr.md` implies MRR belongs
-to "metrics" as its defining characteristic. But MRR might equally belong
-to "revenue," "saas-kpis," or "billing" depending on the reader's frame.
-The filesystem forces a choice that the link graph does not.
+single primary category. The file `sops/onboarding_checklist.md` implies
+the onboarding checklist belongs to "SOPs" as its defining characteristic.
+But the same concept might equally belong to "People," "Compliance," or
+"First Week" depending on the reader's frame. The filesystem forces a
+choice that the link graph does not.
 
 By prohibiting subdirectories, OKF-Flat removes the implicit taxonomy and
 makes all organizational relationships explicit. A concept belongs to
@@ -399,10 +405,10 @@ of type X live?" — but with different properties.
 Directories are enforced by the filesystem: a concept must live somewhere.
 Group indexes are explicit documents: a concept is listed where it
 genuinely belongs. The difference matters most for cross-cutting concepts.
-A compliance requirement that applies to an endpoint, a model, and a job
-can appear in three group indexes simultaneously. In a directory structure,
-it would have to live in one directory and be reached through a less
-natural path from the others.
+A compliance requirement that applies to an SOP, a policy, and an
+application component can appear in three group indexes simultaneously.
+In a directory structure, it would have to live in one directory and be
+reached through a less natural path from the others.
 
 Group indexes also become first-class knowledge objects. They have
 frontmatter, can be queried by type, and carry a `description` that

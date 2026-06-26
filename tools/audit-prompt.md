@@ -1,12 +1,14 @@
 # OKF-Flat Bundle Audit Prompt
 
 Use this prompt when running a periodic audit of an OKF-Flat bundle.
-The audit is scoped to changes since the last audit tag where possible,
-but it may scan bundle frontmatter across the full bundle to identify
-candidate groupings.
+The audit is scoped to recent changes when a change source is available,
+but it does not require Git. It may scan bundle frontmatter across the full
+bundle to identify candidate groupings.
 
-Replace `[BUNDLE_PATH]` and `[APPLICATION_PATH]` with the actual paths
-for your project before using this prompt.
+Replace `[BUNDLE_PATH]` and `[SOURCE_PATHS]` with the actual paths
+for your project before using this prompt. Replace `[AUDIT_REF]` with
+the Git tag or other checkpoint name used to mark the previous audit;
+use `okf-audit` if the project has no other convention.
 
 ---
 
@@ -24,32 +26,55 @@ steps below govern the audit procedure only.
 
 ---
 
-## Step 1: Establish the delta
+## Step 1: Establish the audit scope
 
-Run:
-  git diff okf-audit HEAD -- [BUNDLE_PATH]
+Use the best available change source. Prefer a precise delta when one is
+available, but do not stop if the bundle is not in a Git repository.
 
-This produces the full diff of every bundle file changed since the last
-audit. If the command fails because the okf-audit tag does not exist,
-run:
+If Git is available and the bundle is in a repository, run:
+
+  git diff [AUDIT_REF] HEAD -- [BUNDLE_PATH]
+
+This produces the full diff of bundle files changed since the last audit.
+If `[AUDIT_REF]` does not exist, run:
+
   git log --oneline -- [BUNDLE_PATH]
-and treat the entire bundle as the delta.
 
-Also run:
-  git diff okf-audit HEAD --name-only -- [APPLICATION_PATH]
-to identify which application files changed over the same period. Exclude
-files under [BUNDLE_PATH]. The remaining files are candidates for missing
-concept coverage in Step 4.
+and treat the entire bundle as the audit scope unless another reliable
+change source is available.
+
+Also, if Git is available, run:
+
+  git diff [AUDIT_REF] HEAD --name-only -- [SOURCE_PATHS]
+
+to identify which source artifacts changed over the same period. Exclude
+files under [BUNDLE_PATH]. The remaining files are candidates for coverage
+gaps in Step 4.
+
+If Git is not available, use the best available non-Git evidence:
+
+- file modification times for [BUNDLE_PATH] and [SOURCE_PATHS]
+- a saved audit report, changelog entry, or last-audit timestamp
+- filesystem listings of new, moved, or deleted files
+- user-provided change summaries
+- source-system history, export metadata, or dashboard/report timestamps
+
+If no reliable delta can be established, audit the entire bundle and treat
+all source artifacts that can reasonably be enumerated as coverage-gap
+candidates.
+
+Record which change source was used: Git diff, timestamps, saved audit
+metadata, user summary, source-system metadata, or full-bundle audit.
 
 ---
 
 ## Step 2: Review changed concept files
 
-For each concept file in the bundle diff:
+For each concept file in the audit scope:
 
 1. Read the current file.
-2. Check `resource` validity: if set, verify the path exists in the
-   repo. Flag broken paths.
+2. Check `resource` validity: if set, verify the source or artifact exists
+   in the workspace or source system. Flag broken references.
 3. Check `## Implementation` file paths: if present, verify each path
    exists. Flag missing paths.
 4. Check cross-links: for each linked concept, verify the reverse link
@@ -81,10 +106,10 @@ For each group index whose members include a changed concept:
 
 ## Step 4: Check for missing concept coverage
 
-For each changed application file identified in Step 1 outside
+For each changed or in-scope source artifact identified in Step 1 outside
 [BUNDLE_PATH], check whether a concept file covers it using the `resource`
-fields across bundle concept files. Flag changed application files with
-no concept coverage as documentation gaps.
+fields across bundle concept files. Flag source artifacts with no concept
+coverage as coverage gaps.
 
 Present gaps to the user and ask which to address. Do not create concept
 files automatically.
@@ -93,19 +118,19 @@ files automatically.
 
 ## Step 4b: Check for latent concepts and groups inside one concept
 
-A documentation gap is not only an uncovered file. It can also be a
-covered file documented at too coarse a grain.
+A coverage gap is not only an uncovered source artifact. It can also be a
+covered artifact documented at too coarse a grain.
 
 Scan changed concept files, and any concept files covering changed
-application paths, for bodies that enumerate several named peer items in
+source artifacts, for bodies that enumerate several named peer items in
 prose where each item has its own source artifact. Common examples include
-a directory of sibling configuration files, providers, migrations, schemas,
-rules, jobs, endpoints, or generated artifacts.
+a directory of sibling policies, checklists, configuration files, source
+documents, recordings, dashboards, generated artifacts, or code files.
 
 When such a concept lists three or more peer items each backed by its own
 artifact, flag it as:
 
-1. a documentation-depth gap: each item may merit its own concept file.
+1. a coverage-depth gap: each item may merit its own concept file.
    Step 4 will not catch this because the parent artifact is already
    covered at the file or directory level.
 2. a latent new-group candidate: the would-be concepts, once created,
@@ -188,7 +213,7 @@ Before making any changes, present:
 
   ## Audit Report
 
-  ### Broken resource paths
+  ### Broken source references
   <list, or "None">
 
   ### Missing reverse links
@@ -200,8 +225,8 @@ Before making any changes, present:
   ### Group index issues
   <stale descriptions or missing members, or "None">
 
-  ### Documentation gaps
-  <changed application files with no concept coverage, or "None">
+  ### Coverage gaps
+  <changed or in-scope source artifacts with no concept coverage, or "None">
 
   ### Latent concepts (depth gaps)
   <concepts that enumerate three or more peer items each backed by their
@@ -226,6 +251,10 @@ Before making any changes, present:
   <existing group name, proposed split, drafted description for each
   resulting group, and confirmed member count on each side, or "None">
 
+  ### Audit scope source
+  <Git diff, timestamps, saved audit metadata, user summary, source-system
+  metadata, full-bundle audit, or another source used to establish scope>
+
 Ask: "Should I apply all of these, or would you like to review them
 individually?"
 
@@ -241,23 +270,28 @@ For each approved change:
 Then append a single audit summary entry to [BUNDLE_PATH]/log.md:
 
   ## YYYY-MM-DD - Audit
-  - Audit completed covering changes since <last audit date>
-  - <N> resource paths verified, <N> broken references fixed
+  - Audit completed covering <scope source and period, or "full bundle">
+  - <N> source references verified, <N> broken references fixed
   - <N> cross-links added
   - <N> group index descriptions updated
-  - <N> documentation gaps identified, <N> addressed
+  - <N> coverage gaps identified, <N> addressed
   - <N> latent concept clusters identified, <N> addressed
   - <N> new groups proposed, <N> created
   - <N> group splits proposed, <N> applied
 
 ---
 
-## Step 8: Advance the audit tag
+## Step 8: Record the audit checkpoint
 
-After [BUNDLE_PATH]/log.md is committed, run:
+If Git is available and the project uses `[AUDIT_REF]`, run after
+[BUNDLE_PATH]/log.md is committed:
 
-  git tag -f okf-audit
-  git push origin okf-audit --force
+  git tag -f [AUDIT_REF]
+  git push origin [AUDIT_REF] --force
 
 Confirm with the user before pushing if their workflow requires it.
+
+If Git is not available or the project does not use tags, record the audit
+checkpoint in [BUNDLE_PATH]/log.md only. Include the audit date, scope
+source, and enough detail for the next audit to determine what changed.
 ```

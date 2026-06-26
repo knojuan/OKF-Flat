@@ -5,7 +5,7 @@ that replaces directory hierarchy with explicit link-based navigation.
 Every concept file lives in a single flat directory. All organization is
 carried by cross-links and typed index files.
 
-> **Status:** Draft — v0.1.1
+> **Status:** Draft — v0.1.2
 > **License:** Apache 2.0
 > **Upstream:** [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) by Google Cloud
 
@@ -52,10 +52,10 @@ An OKF bundle is OKF-Flat conformant only if it uses no subdirectories.
 ```
 bundle/
 ├── index.md                  ← root index, no frontmatter
-├── index_metrics.md          ← group index, type: Index, description required
-├── index_tables.md           ← group index
-├── mrr.md                    ← concept file
-├── subscriptions.md          ← concept file
+├── index_sops.md             ← group index, type: Index, description required
+├── index_decisions.md        ← group index
+├── onboarding_checklist.md   ← concept file
+├── approval_policy.md        ← concept file
 ├── okf-flat-reference.md     ← built-in reference, ships in every bundle
 └── log.md                    ← change history
 ```
@@ -65,40 +65,43 @@ A group index:
 ```markdown
 ---
 type: Index
-title: Metrics
-description: Business and operational metrics. Use this group to answer
-  questions about how key figures are calculated, what their sources are,
-  and how they relate to each other.
-tags: [index, metrics]
+title: SOPs
+description: Standard operating procedures and repeatable workflows. Use
+  this group to answer questions about when a process starts, what steps
+  to follow, and how exceptions are handled.
+tags: [index, sop, process]
 timestamp: 2026-06-23T00:00:00Z
 ---
 
-# Metrics
+# SOPs
 
-- [Monthly Recurring Revenue](mrr.md) — recurring subscription revenue normalized to a monthly period
-- [Churn Rate](churn_rate.md) — percentage of subscribers lost in a period
+- [New Hire Onboarding Checklist](onboarding_checklist.md) — steps for preparing access, equipment, and first-week orientation
+- [Vendor Approval Process](vendor_approval.md) — workflow for reviewing and approving a new vendor
 ```
 
 A concept file:
 
 ```markdown
 ---
-type: Metric
-title: Monthly Recurring Revenue
-description: Recurring subscription revenue normalized to a monthly period.
-resource: dashboard://revenue/mrr
-tags: [revenue, saas, finance]
+type: SOP
+title: New Hire Onboarding Checklist
+description: Repeatable checklist for preparing a new hire before and during
+  their first week.
+resource: policy://people/onboarding
+tags: [people, onboarding, operations]
 timestamp: 2026-06-23T00:00:00Z
 ---
 
-# Calculation
+# Steps
 
-MRR is the sum of all active subscription amounts normalized to one month.
+1. Confirm start date and manager.
+2. Prepare required account access.
+3. Schedule first-week orientation sessions.
 
 ## Related
 
-- [Subscriptions table](subscriptions.md) — source data
-- [Churn Rate](churn_rate.md) — inverse health signal
+- [Access Policy](access_policy.md) — access rules used during onboarding
+- [Equipment Request SOP](equipment_request.md) — hardware request workflow
 ```
 
 ---
@@ -123,9 +126,10 @@ Most tasks complete at level 3 or 4 without reading the full bundle.
 directory. Create `index.md`, your group index files, and your concept files
 following the conventions in the spec.
 
-**In an application:** Also copy `spec/okf-flat-reference.md` and create
-an `okf-flat-maintenance.md` file describing your application-specific
-conventions (concept types, resource path rules, group structure).
+**In a maintained knowledge base:** Also copy `tools/okf-flat-maintenance.md`
+into the bundle as `okf-flat-maintenance.md` and adapt it to your domain:
+SOPs, business operations, research notes, application documentation,
+personal ideas, or any other knowledge collection.
 
 **Tooling:** See `tools/validate.md` for the conformance validator spec.
 See `tools/audit-prompt.md` for the periodic audit prompt.

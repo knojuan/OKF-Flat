@@ -52,10 +52,10 @@ Status: NON-CONFORMANT (2 errors, 1 warning)
 
 ERRORS
   E-SUBDIR   (bundle)           Subdirectory found: tables/
-  E-NODESC   index_metrics.md   Group index missing required description field
+  E-NODESC   index_sops.md      Group index missing required description field
 
 WARNINGS
-  W-NOTIMESTAMP  mrr.md   Concept missing recommended timestamp field
+  W-NOTIMESTAMP  onboarding_checklist.md   Concept missing recommended timestamp field
 ```
 
 ---
