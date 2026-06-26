@@ -6,6 +6,17 @@ Versioning follows `<major>.<minor>.<patch>-<status>`.
 
 ---
 
+## v0.1.1-draft — 2026-06-26
+
+Draft specification update.
+
+### Changed
+- Changed `log.md` guidance to append-only chronological order.
+- Expanded the audit prompt with generic latent-concept, new-group, and
+  group-split discovery checks.
+
+---
+
 ## v0.1.0-draft — 2026-06-23
 
 Initial draft specification.

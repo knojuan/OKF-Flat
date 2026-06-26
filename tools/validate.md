@@ -206,6 +206,10 @@ all rules:
 - Parse markdown links using the pattern `[text](target)`. Extract only
   links where target ends in `.md` and contains no `://` (relative links
   only). Ignore external URLs.
+- Resolve relative Markdown targets against the file containing the link,
+  then normalize them to bundle-root filenames for reachability checks.
+  Because OKF-Flat bundles have no subdirectories, internal concept links
+  normally resolve to `filename.md` or `./filename.md`.
 - The validator should not attempt to validate frontmatter field values
   beyond presence and non-emptiness. Type vocabulary is producer-defined
   (except `Index` on group indexes).

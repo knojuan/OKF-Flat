@@ -4,7 +4,7 @@ title: How This Bundle Works
 description: Operational guide for navigating and contributing to this bundle. Read this first.
 tags: [reference, navigation, bundle]
 source: https://github.com/YOUR-ORG/okf-flat/blob/main/spec/okf-flat-reference.md
-timestamp: 2026-06-23T00:00:00Z
+timestamp: 2026-06-26T00:00:00Z
 ---
 
 # How This Bundle Works
@@ -93,8 +93,8 @@ frontmatter. Always read this first.
 
 ### The Change Log (`log.md`)
 
-An optional file recording bundle changes in reverse chronological order.
-No frontmatter. Read it to understand what has changed recently.
+An optional append-only file recording bundle changes in chronological
+order. No frontmatter. Read it to understand what has changed recently.
 
 ---
 
@@ -156,6 +156,9 @@ to reach related concepts without returning to the index.
 
 **Linking:**
 - Use relative links: `[Title](filename.md)`.
+- Because the bundle is flat, most internal links should point to files
+  in the same directory, such as `[Title](filename.md)` or
+  `[Title](./filename.md)`.
 - Link in both directions when two concepts reference each other.
 - Annotate links with brief context so a reader understands the
   relationship without opening the target file.

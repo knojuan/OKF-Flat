@@ -3,7 +3,7 @@ type: Reference
 title: Bundle Maintenance Conventions
 description: How this bundle is maintained, how application files are referenced, and what triggers a documentation update. Read this before adding or changing bundle content.
 tags: [reference, maintenance, conventions]
-timestamp: 2026-06-23T00:00:00Z
+timestamp: 2026-06-26T00:00:00Z
 ---
 
 # Bundle Maintenance Conventions
@@ -98,9 +98,9 @@ A concept SHOULD link to another when:
 - Two concepts are frequently used or changed together
 - A compliance requirement applies to a concept
 
-Links are bidirectional. If `a.md` links to `b.md`, `b.md` should link
-back to `a.md` unless the relationship is trivially obvious in one
-direction only.
+Links use standard Markdown and are bidirectional. If `a.md` links to
+`b.md`, `b.md` should link back to `a.md` unless the relationship is
+trivially obvious in one direction only.
 
 ---
 

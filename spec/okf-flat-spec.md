@@ -1,8 +1,8 @@
 # OKF-Flat Specification
 
-**Version:** 0.1.0-draft
+**Version:** 0.1.1-draft
 **Status:** Draft
-**Published:** 2026-06-23
+**Published:** 2026-06-26
 **License:** Apache 2.0
 **Upstream:** [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
 
@@ -73,7 +73,7 @@ OKF-Flat inherits the following from OKF v0.1 unchanged:
 Any tool, agent, or system that can consume OKF can consume OKF-Flat
 without modification.
 
-An OKF bundle is OKF-Flat conformant only if it uses no subdirectories
+An OKF bundle is OKF-Flat conformant only if it uses no subdirectories,
 and all group index files carry a non-empty `description` field.
 
 ### 2.3 Divergence Table
@@ -85,7 +85,7 @@ agentic progressive disclosure.
 | # | OKF v0.1 behavior | OKF-Flat behavior | Rationale |
 |---|---|---|---|
 | D1 | Directory structure left to producer | No subdirectories permitted | A filesystem hierarchy implies a primary taxonomy. Concepts that belong to multiple groups can only physically live in one directory, forcing an arbitrary placement. Prohibiting subdirectories makes the link graph the sole organizational structure and removes the implied taxonomy entirely. |
-| D2 | `description` optional on all files | `description` required on `index_*.md` files | The four-level progressive disclosure protocol (§9) requires agents to evaluate group relevance by reading frontmatter only, without loading full file bodies. A group index without a `description` forces a full body read, defeating the purpose of the frontmatter scan layer. The requirement is scoped narrowly to group index files only — concept file `description` remains optional, consistent with OKF. |
+| D2 | `description` optional on all files | `description` required on `index_*.md` files | The four-level progressive disclosure protocol (§3.9) requires agents to evaluate group relevance by reading frontmatter only, without loading full file bodies. A group index without a `description` forces a full body read, defeating the purpose of the frontmatter scan layer. The requirement is scoped narrowly to group index files only — concept file `description` remains optional, consistent with OKF. |
 
 No other changes are made. OKF-Flat does not add new required frontmatter
 fields to concept files, does not restrict type values, and does not add
@@ -351,18 +351,19 @@ complete at level 3 or 4 without reading the full bundle.
 
 ### 3.11 The `log.md` File
 
-An optional `log.md` at the bundle root records changes in reverse
+An optional `log.md` at the bundle root records changes in append-only
 chronological order. It has no frontmatter. Entries use ISO 8601 dates.
+New entries are added to the end of the file.
 
 ```markdown
 # Change Log
 
-## 2026-06-23
-- Added `churn_rate.md` — subscriber loss rate metric
-- Updated `mrr.md` — added forward to churn_rate.md
-
 ## 2026-06-17
 - Initial bundle created
+
+## 2026-06-23
+- Added `churn_rate.md` — subscriber loss rate metric
+- Updated `mrr.md` — added forward link to [Churn Rate](churn_rate.md)
 ```
 
 ---

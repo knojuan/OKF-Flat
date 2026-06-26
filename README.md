@@ -5,7 +5,7 @@ that replaces directory hierarchy with explicit link-based navigation.
 Every concept file lives in a single flat directory. All organization is
 carried by cross-links and typed index files.
 
-> **Status:** Draft — v0.1.0
+> **Status:** Draft — v0.1.1
 > **License:** Apache 2.0
 > **Upstream:** [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) by Google Cloud
 
